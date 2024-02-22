@@ -1,12 +1,21 @@
 #!/usr/bin/python3
 """This module defines a class to manage file storage for hbnb clone"""
 import json
+from models import city, place, review, state, amenity, user, base_model
 
 
 class FileStorage:
     """This class manages storage of hbnb models in JSON format"""
     __file_path = 'file.json'
     __objects = {}
+    mapped_classes = {
+        'City': city.City,
+        'Place': place.Place,
+        'Review': review.Review,
+        'State': state.State,
+        'Amenity': amenity.Amenity,
+        'User': user.User
+    }
 
     def all(self):
         """Returns a dictionary of models currently in storage"""
