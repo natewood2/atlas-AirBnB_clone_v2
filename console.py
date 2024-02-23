@@ -124,17 +124,17 @@ class HBNBCommand(cmd.Cmd):
                     value = float(value) if '.' in value else int(value)
                 except ValueError:
                     continue  # Skip if conversion fails
-        # Check if attribute exists and set it
-        if hasattr(new_instance, key):
-            attribute_type = type(getattr(new_instance, key))
-            if attribute_type in [int, float]:
-                # Convert value to the attribute's type
-                value = attribute_type(value)
-            setattr(new_instance, key, value)
-        # Assuming a save method is available in the storage object
-        storage.save()
-        print(new_instance.id)
-        storage.save()
+            # Check if attribute exists and set it
+            if hasattr(new_instance, key):
+                attribute_type = type(getattr(new_instance, key))
+                if attribute_type in [int, float]:
+                    # Convert value to the attribute's type
+                    value = attribute_type(value)
+                setattr(new_instance, key, value)
+                # Assuming a save method is available in the storage object
+                storage.save()
+                print(new_instance.id)
+                storage.save()
 
     def help_create(self):
         """ Help information for the create method """
