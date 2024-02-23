@@ -96,71 +96,45 @@ class HBNBCommand(cmd.Cmd):
         """ Method to exit the HBNB console"""
         exit()
 
-    def help_quit(self):
-        """ Prints the help documentation for quit  """
-        print("Exits the program with formatting\n")
-
-    def do_EOF(self, arg):
-        """ Handles EOF to exit program """
-        print()
-        exit()
-
-    def help_EOF(self):
-        """ Prints the help documentation for EOF """
-        print("Exits the program without formatting\n")
-
-    def emptyline(self):
-        """ Overrides the emptyline method of CMD """
-        pass
-
-    def do_create(self, args):
-        """ Create an object of any class"""
-        if not args:
+    def do_create(self, line):
+        """ Create an object of any class with optional initialization parameters."""
+        if not line:
             print("** class name missing **")
             return
-        # Split the arguments by spaces
-        arg_list = args.split()
-        # Get the class name from the first argument
-        class_name = arg_list[0]
-        # Check if the class exists in HBNBCommand.classes
-        if class_name not in HBNBCommand.classes:
+        args = line.split()
+        class_name = args[0]
+        if class_name not in HBNBCommand.classes.keys():
             print("** class doesn't exist **")
             return
-        # Remove the class name from the argument list
-        arg_list = arg_list[1:]
-        # Create a dictionary to store the attributes
-        attributes = {}
-        # Parse and process the parameters
-        for param in arg_list:
-            # Split the parameter by '=' to get key and value
-            param_parts = param.split('=')
-            # Check if the parameter has valid format (key=value)
-            if len(param_parts) != 2:
-                continue
-            key, value = param_parts[0], param_parts[1]
-            # Unquote, underscore to space
+        # Create a new instance without keyword arguments
+        new_instance = HBNBCommand.classes[class_name]()
+        # Process each parameter starting from the second one
+        for param in args[1:]:
+            if "=" not in param:
+                continue  # Skip if parameter doesn't contain '='
+            key, value = param.split("=", 1)  # Split parameter into key and value
+            # Remove quotes and replace underscores with spaces
+            # Also, convert numbers to their respective types
             if value.startswith('"') and value.endswith('"'):
-                value = value[1:-1].replace('_', ' ')
-            # Convert values to appropriate data types (float, int, or str)
-            if '.' in value:
-                try:
-                    value = float(value)
-                except ValueError:
-                    pass
+                value = value[1:-1].replace('\\"', '"').replace('_', ' ')
+            elif value.startswith("'") and value.endswith("'"):
+                value = value[1:-1].replace("\\'", "'").replace('_', ' ')
             else:
                 try:
-                    value = int(value)
+                    value = float(value) if '.' in value else int(value)
                 except ValueError:
-                    pass
-            # Store the key-value pair in the attributes dictionary
-            attributes[key] = value
-        # Create an instance of the specified class with the attributes
-        new_instance = HBNBCommand.classes[class_name](**attributes)
-        # Save the new instance to the storage
-        storage.new(new_instance)
+                    continue  # Skip if conversion fails
+        # Check if attribute exists and set it
+        if hasattr(new_instance, key):
+            attribute_type = type(getattr(new_instance, key))
+            if attribute_type in [int, float]:
+                # Convert value to the attribute's type
+                value = attribute_type(value)
+            setattr(new_instance, key, value)
+        # Assuming a save method is available in the storage object
         storage.save()
-        # Print the ID of the newly created object
         print(new_instance.id)
+        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
