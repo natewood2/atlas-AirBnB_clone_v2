@@ -15,14 +15,9 @@ class BaseModel:
             self.updated_at = datetime.now()
             storage.new(self)
         else:
-            try:
-                kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'], '%Y-%m-%dT%H:%M:%S.%f')
-                kwargs['created_at'] = datetime.strptime(kwargs['created_at'], '%Y-%m-%dT%H:%M:%S.%f')
-            except KeyError:
-                kwargs['updated_at'] = datetime.now()
-                kwargs['created_at'] = datetime.now()
-            if '__class__' in kwargs:
-                del kwargs['__class__']
+            self.updated_at = datetime.strptime(kwargs.get('updated_at', datetime.now().isoformat()), '%Y-%m-%dT%H:%M:%S.%f')
+            self.created_at = datetime.strptime(kwargs.get('created_at', datetime.now().isoformat()), '%Y-%m-%dT%H:%M:%S.%f')
+            del kwargs['__class__']
             self.__dict__.update(kwargs)
 
     def __str__(self):
