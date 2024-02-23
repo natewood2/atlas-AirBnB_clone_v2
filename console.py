@@ -137,7 +137,7 @@ class HBNBCommand(cmd.Cmd):
             obj = eval(args[0])()
         else:
             obj = eval(args[0])(**kwargs)
-        print(obj.id)
+        # print(obj.id) #
         obj.save()
 
     def help_create(self):
