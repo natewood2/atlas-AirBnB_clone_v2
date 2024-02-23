@@ -7,23 +7,19 @@ from datetime import datetime
 class BaseModel:
     """A base class for all hbnb models"""
     def __init__(self, *args, **kwargs):
-        """Instatntiates a new model"""
         if not kwargs:
-            from models import storage
-            self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
-            storage.new(self)
-        else:
-            if 'updated_at' not in kwargs:
-                kwargs['updated_at'] = datetime.now()
-            if 'created_at' not in kwargs:
-                kwargs['created_at'] = datetime.now()
-            kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'],
-                                                     '%Y-%m-%dT%H:%M:%S.%f')
-            kwargs['created_at'] = datetime.strptime(kwargs['created_at'],
-                                                     '%Y-%m-%dT%H:%M:%S.%f')
-            self.__dict__.update(kwargs)
+            kwargs = {}
+        kwargs.setdefault('id', str(uuid4()))
+        kwargs.setdefault('created_at', datetime.utcnow())
+        if not isinstance(kwargs['created_at'], datetime):
+            kwargs['created_at'] = datetime.strptime(
+                kwargs['created_at'], "%Y-%m-%d %H:%M:%S.%f"
+            )
+        kwargs.setdefault('updated_at', datetime.utcnow())
+        if not isinstance(kwargs['updated_at'], datetime):
+            kwargs['updated_at'] = datetime.strptime(
+                kwargs['updated_at'], "%Y-%m-%d %H:%M:%S.%f"
+            )
 
     def __str__(self):
         """Returns a string representation of the instance"""
