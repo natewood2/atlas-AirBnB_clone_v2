@@ -123,20 +123,28 @@ class HBNBCommand(cmd.Cmd):
             print("** class doesn't exist **")
             return
         kwargs = {}
-        for param in range(1, len(args)):
-            key, value = args[param].split("=")
-            if value[0] == '"':
-                value = value.replace('_', ' ').strip('"')
+        for param in args[1:]:
+            # checks if the parameter follows the 
+            # expected key=value format.
+            if "=" not in param:
+                continue
+            # splits the parameter into a key and a 
+            # value at the first occurrence of '='
+            key, value = param.split("=", 1)
+            if value.startswith('"') and value.endswith('"'):
+                # [1:-1] removes the first and the last double quote and replace underscores with spaces
+                value = value[1:-1].replace('\\"', '"').replace('_', ' ')
             else:
                 try:
-                    value = eval(value)
-                except (SyntaxError, NameError):
+                    value = float(value) if '.' in value else int(value)
+                except ValueError:
                     continue
             kwargs[key] = value
-        if len(kwargs) == 0:
-            obj = eval(args[0])()
-        else:
+        try:
             obj = eval(args[0])(**kwargs)
+        except TypeError:
+            print("** error creating instance with given parameters **")
+            return
         print(obj.id)
         obj.save()
 
