@@ -21,7 +21,8 @@ class BaseModel:
             except KeyError:
                 kwargs['updated_at'] = datetime.now()
                 kwargs['created_at'] = datetime.now()
-            del kwargs['__class__']
+            if '__class__' in kwargs:
+                del kwargs['__class__']
             self.__dict__.update(kwargs)
 
     def __str__(self):
