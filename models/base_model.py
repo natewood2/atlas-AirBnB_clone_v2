@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """This module defines a base class for all models in our hbnb clone"""
+import json
 import uuid
 from datetime import datetime
 
@@ -42,3 +43,8 @@ class BaseModel:
         dictionary['created_at'] = self.created_at.isoformat()
         dictionary['updated_at'] = self.updated_at.isoformat()
         return dictionary
+
+    def to_json(self):
+        """Serialize instance to JSON, handling UUIDs correctly"""
+        return json.dumps(self.to_dict())
+    
