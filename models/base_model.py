@@ -44,7 +44,4 @@ class BaseModel:
         dictionary['updated_at'] = self.updated_at.isoformat()
         return dictionary
 
-    def to_json(self):
-        """Serialize instance to JSON, handling UUIDs correctly"""
-        return json.dumps(self.to_dict())
     
