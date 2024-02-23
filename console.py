@@ -113,40 +113,54 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-    def do_create(self, line):
-        """Usage: create <Class name> <param 1> <param 2> <param 3>..."""
-        if not line:
+    def do_create(self, args):
+        """ Create an object of any class"""
+        if not args:
             print("** class name missing **")
             return
-        args = line.split()
-        if args[0] not in HBNBCommand.classes.keys():
+        # Split the arguments by spaces
+        arg_list = args.split()
+        # Get the class name from the first argument
+        class_name = arg_list[0]
+        # Check if the class exists in HBNBCommand.classes
+        if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        kwargs = {}
-        for param in args[1:]:
-            # checks if the parameter follows the 
-            # expected key=value format.
-            if "=" not in param:
+        # Remove the class name from the argument list
+        arg_list = arg_list[1:]
+        # Create a dictionary to store the attributes
+        attributes = {}
+        # Parse and process the parameters
+        for param in arg_list:
+            # Split the parameter by '=' to get key and value
+            param_parts = param.split('=')
+            # Check if the parameter has valid format (key=value)
+            if len(param_parts) != 2:
                 continue
-            # splits the parameter into a key and a 
-            # value at the first occurrence of '='
-            key, value = param.split("=", 1)
+            key, value = param_parts[0], param_parts[1]
+            # Unquote, underscore to space
             if value.startswith('"') and value.endswith('"'):
-                # [1:-1] removes the first and the last double quote and replace underscores with spaces
-                value = value[1:-1].replace('\\"', '"').replace('_', ' ')
+                value = value[1:-1].replace('_', ' ')
+            # Convert values to appropriate data types (float, int, or str)
+            if '.' in value:
+                try:
+                    value = float(value)
+                except ValueError:
+                    pass
             else:
                 try:
-                    value = float(value) if '.' in value else int(value)
+                    value = int(value)
                 except ValueError:
-                    continue
-            kwargs[key] = value
-        try:
-            obj = eval(args[0])(**kwargs)
-        except TypeError:
-            print("** error creating instance with given parameters **")
-            return
-        print(obj.id)
-        obj.save()
+                    pass
+            # Store the key-value pair in the attributes dictionary
+            attributes[key] = value
+        # Create an instance of the specified class with the attributes
+        new_instance = HBNBCommand.classes[class_name](**attributes)
+        # Save the new instance to the storage
+        storage.new(new_instance)
+        storage.save()
+        # Print the ID of the newly created object
+        print(new_instance.id)
 
     def help_create(self):
         """ Help information for the create method """
