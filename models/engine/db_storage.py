@@ -4,8 +4,9 @@ with new SQL database.
 """
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from models.base_model import Base
+from models.base_model import Base, BaseModel
 import os
+from models import city, place, review, state, amenity, user
 
 
 class DBStorage:
@@ -15,6 +16,14 @@ class DBStorage:
     """
     __engine = None
     __session = None
+    CDIC = {
+        'City': city.City,
+        'Place': place.Place,
+        'Review': review.Review,
+        'State': state.State,
+        'Amenity': amenity.Amenity,
+        'User': user.User
+    }
 
     def __init__(self):
         """ Initializes the database engine. """
@@ -38,9 +47,6 @@ class DBStorage:
                 key = f'{obj.__class__.__name__}.{obj.id}'
                 objects[key] = obj
         else:
-            from models.state import State
-            from models.city import City
-            from models.user import User
             classes = [State, City, User]
             for cls in classes:
                 query = self.__session.query(cls).all()
@@ -64,9 +70,6 @@ class DBStorage:
 
     def reload(self):
         """ Creates database tables and initializes a new session. """
-        from models.state import State
-        from models.city import City
-        from models.user import User
         Base.metadata.create_all(self.__engine)
         Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = Session()
