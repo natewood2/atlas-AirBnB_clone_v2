@@ -65,6 +65,7 @@ class DBStorage:
         """ Creates database tables and initializes a new session. """
         from models.state import State
         from models.city import City
+        from models.user import User
         Base.metadata.create_all(self.__engine)
         Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = Session()
