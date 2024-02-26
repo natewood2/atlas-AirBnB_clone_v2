@@ -20,6 +20,7 @@ class DBStorage:
         """ Initializes the database engine. """
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
                                       format(os.environ['HBNB_MYSQL_USER'],
+                                             os.environ['HBNB_MYSQL_PWD'],
                                              os.environ['HBNB_MYSQL_HOST'],
                                              os.environ['HBNB_MYSQL_DB']),
                                       pool_pre_ping=True)
