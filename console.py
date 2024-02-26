@@ -97,44 +97,31 @@ class HBNBCommand(cmd.Cmd):
         exit()
 
     def do_create(self, line):
-        """ Create an object of any class with optional initialization parameters."""
+        """Usage: create <Class name> <param 1> <param 2> <param 3>..."""
         if not line:
             print("** class name missing **")
             return
         args = line.split()
-        class_name = args[0]
-        if class_name not in HBNBCommand.classes.keys():
+        if args[0] not in HBNBCommand.classes.keys():
             print("** class doesn't exist **")
             return
-        # Create a new instance without keyword arguments
-        new_instance = HBNBCommand.classes[class_name]()
-        # Process each parameter starting from the second one
-        for param in args[1:]:
-            if "=" not in param:
-                continue  # Skip if parameter doesn't contain '='
-            key, value = param.split("=", 1)  # Split parameter into key and value
-            # Remove quotes and replace underscores with spaces
-            # Also, convert numbers to their respective types
-            if value.startswith('"') and value.endswith('"'):
-                value = value[1:-1].replace('\\"', '"').replace('_', ' ')
-            elif value.startswith("'") and value.endswith("'"):
-                value = value[1:-1].replace("\\'", "'").replace('_', ' ')
+        kwargs = {}
+        for param in range(1, len(args)):
+            ky, vl = args[param].split("=")
+            if vl[0] == '"':
+                vl = vl.replace('_', ' ').strip('"')
             else:
                 try:
-                    value = float(value) if '.' in value else int(value)
-                except ValueError:
-                    continue  # Skip if conversion fails
-            # Check if attribute exists and set it
-            if hasattr(new_instance, key):
-                attribute_type = type(getattr(new_instance, key))
-                if attribute_type in [int, float]:
-                    # Convert value to the attribute's type
-                    value = attribute_type(value)
-                setattr(new_instance, key, value)
-                # Assuming a save method is available in the storage object
-                storage.save()
-                print(new_instance.id)
-                storage.save()
+                    vl = eval(vl)
+                except (SyntaxError, NameError):
+                    continue
+            kwargs[ky] = vl
+        if len(kwargs) == 0:
+            obj = eval(args[0])()
+        else:
+            obj = eval(args[0])(**kwargs)
+        print(obj.id)
+        obj.save()
 
     def help_create(self):
         """ Help information for the create method """
