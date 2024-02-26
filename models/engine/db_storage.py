@@ -16,14 +16,14 @@ class DBStorage:
     """
     __engine = None
     __session = None
-    CDIC = {
-        'City': city.City,
-        'Place': place.Place,
-        'Review': review.Review,
-        'State': state.State,
-        'Amenity': amenity.Amenity,
-        'User': user.User
-    }
+    # CDIC = {
+    #     'City': city.City,
+    #     'Place': place.Place,
+    #     'Review': review.Review,
+    #     'State': state.State,
+    #     'Amenity': amenity.Amenity,
+    #     'User': user.User
+    # }
 
     def __init__(self):
         """ Initializes the database engine. """
@@ -41,7 +41,6 @@ class DBStorage:
         Base.metadata.create_all(self.__engine)
         Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = Session()
-        self.__session.begin()
 
     def all(self, cls=None):
         """ Queries all objects of a given class from the database. """
