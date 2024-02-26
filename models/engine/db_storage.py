@@ -40,7 +40,8 @@ class DBStorage:
         else:
             from models.state import State
             from models.city import City
-            classes = [State, City]
+            from models.user import User
+            classes = [State, City, User]
             for cls in classes:
                 query = self.__session.query(cls).all()
                 for obj in query:
