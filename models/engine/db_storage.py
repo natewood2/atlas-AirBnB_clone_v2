@@ -28,19 +28,23 @@ class DBStorage:
 
     def all(self, cls=None):
         """ Queries all objects of a given class from the database. """
-        objects = {} 
+        objects = {}
         if cls:
-            query = self.__session.query(cls).options(joinedload('*')).all()
+            if isinstance(cls, str):
+                cls = eval(cls)
+            query = self.__session.query(cls).all()
             for obj in query:
-                key = f'{type(obj).__name__}.{obj.id}'
+                key = f'{obj.__class__.__name__}.{obj.id}'
                 objects[key] = obj
         else:
-            for cls in Base._decl_class_registry.values():
-                if hasattr(cls, '__tablename__'):  # Filter out non-table classes
-                    query = self.__session.query(cls).options(joinedload('*')).all()
-                    for obj in query:
-                        key = f'{type(obj).__name__}.{obj.id}'
-                        objects[key] = obj
+            from models.state import State
+            from models.city import City
+            classes = [State, City]
+            for cls in classes:
+                query = self.__session.query(cls).all()
+                for obj in query:
+                    key = f'{obj.__class__.__name__}.{obj.id}'
+                    objects[key] = obj
         return objects
 
     def new(self, obj):
