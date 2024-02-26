@@ -46,6 +46,5 @@ class BaseModel:
         """Convert instance into dict format"""
         data = dict(self.__dict__)
         data.pop('_sa_instance_state', None)
+        data['__class__'] = self.__class__.__name__
         return data
-
-    
