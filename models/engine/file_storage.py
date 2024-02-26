@@ -8,22 +8,31 @@ class FileStorage:
     """This class manages storage of hbnb models in JSON format"""
     __file_path = 'file.json'
     __objects = {}
+    CDIC = {
+        'City': city.City,
+        'Place': place.Place,
+        'Review': review.Review,
+        'State': state.State,
+        'Amenity': amenity.Amenity,
+        'User': user.User
+    }
 
     def all(self, cls=None):
-        """Returns a dictionary of models currently in storage"""
-        if cls is None:
-            return FileStorage.__objects
-        else:
-            return {key: obj for key, obj in FileStorage.__objects.items() if isinstance(obj, cls)}
+        """Returns a dictionary of models currently in storage
+        if cls specified, only returns that class"""
+        if cls is not None:
+            if cls in self.CDIC.keys():
+                cls = self.CDIC.get(cls)
+            spec_rich = {}
+            for ky, vl in self.__objects.items():
+                if cls == type(vl):
+                    spec_rich[ky] = vl
+            return spec_rich
+        return self.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
-        obj_dict = obj.to_dict()
-        if '__class__' in obj_dict:
-            key = obj_dict['__class__'] + '.' + obj.id
-            self.all().update({key: obj})
-        else:
-            print("Error: '__class__' key not found in object dictionary.")
+        self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
 
     def save(self):
         """Saves storage dictionary to file"""
@@ -54,13 +63,17 @@ class FileStorage:
             with open(FileStorage.__file_path, 'r') as f:
                 temp = json.load(f)
                 for key, val in temp.items():
-                        self.all()[key] = classes[val['__class__']](**val)
+                    self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
 
     def delete(self, obj=None):
-        """ Woah new public instances. """
-        if obj is not None:
-            key = f"{obj.__class__.__name__}.{obj.id}"
-            if key in self.__objects:
-                del self.__objects[key]
+        """if obj deletes obj from __objects"""
+        try:
+            key = obj.__class__.__name__ + "." + obj.id
+            del self.__objects[key]
+        except (AttributeError, KeyError):
+            pass
+
+    def close(self):
+        self.reload()
