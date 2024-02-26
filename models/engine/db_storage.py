@@ -1,19 +1,12 @@
 #!/usr/bin/python3
-"""This module defines a class to manage file storage for hbnb clone
-with new SQL database.
-"""
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
+from os import getenv
+from sqlalchemy import create_engine, inspect, MetaData
+from sqlalchemy.orm import sessionmaker, scoped_session
 from models.base_model import Base, BaseModel
-import os
 from models import city, place, review, state, amenity, user
 
 
 class DBStorage:
-    """
-    Handles long-term storage of all class instances via SQLAlchemy ORM.
-    Thank you Doug.
-    """
     __engine = None
     __session = None
     CDIC = {
@@ -26,52 +19,54 @@ class DBStorage:
     }
 
     def __init__(self):
-        """ Initializes the database engine. """
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
-                                      format(os.environ['HBNB_MYSQL_USER'],
-                                             os.environ['HBNB_MYSQL_PWD'],
-                                             os.environ['HBNB_MYSQL_HOST'],
-                                             os.environ['HBNB_MYSQL_DB']),
+        self.__engine = create_engine("mysql+mysqldb://{}:{}@{}/{}".format(
+                                            getenv('HBNB_MYSQL_USER'),
+                                            getenv('HBNB_MYSQL_PWD'),
+                                            getenv('HBNB_MYSQL_HOST'),
+                                            getenv('HBNB_MYSQL_DB')),
                                       pool_pre_ping=True)
-        if os.getenv('HBNB_ENV') == 'test':
-            Base.metadata.drop_all(self.__engine)
 
     def reload(self):
-        """ Creates database tables and initializes a new session. """
         Base.metadata.create_all(self.__engine)
-        Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        the_session = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        Session = scoped_session(the_session)
         self.__session = Session()
-        self.__session.begin()
-
-    def all(self, cls=None):
-        """ Queries all objects of a given class from the database. """
-        objects = {}
-        if cls:
-            if isinstance(cls, str):
-                cls = eval(cls)
-            query = self.__session.query(cls).all()
-            for obj in query:
-                key = f'{obj.__class__.__name__}.{obj.id}'
-                objects[key] = obj
-        else:
-            classes = [state.State, city.City, user.User]
-            for cls in classes:
-                query = self.__session.query(cls).all()
-                for obj in query:
-                    key = f'{obj.__class__.__name__}.{obj.id}'
-                    objects[key] = obj
-        return objects
 
     def new(self, obj):
-        """ Adds a new object to the session. """
         self.__session.add(obj)
 
     def save(self):
-        """ Commits changes to the database. """
         self.__session.commit()
 
     def delete(self, obj=None):
-        """ Deletes an object from the session. """
-        if obj:
+        if obj is not None:
             self.__session.delete(obj)
 
+    def all(self, cls=None):
+        obj_dct = {}
+        qry = []
+        if cls is None:
+            for cls_typ in DBStorage.CDIC.values():
+                qry.extend(self.__session.query(cls_typ).all())
+        else:
+            if cls in self.CDIC.keys():
+                cls = self.CDIC.get(cls)
+            qry = self.__session.query(cls)
+        for obj in qry:
+            obj_key = "{}.{}".format(type(obj).__name__, obj.id)
+            obj_dct[obj_key] = obj
+        return obj_dct
+
+    def gettables(self):
+        inspector = inspect(self.__engine)
+        return inspector.get_table_names()
+
+    def close(self):
+        self.__session.close()
+
+    def hcf(self, cls):
+        metadata = MetaData()
+        metadata.reflect(bind=self.__engine)
+        table = metadata.tables.get(cls.__tablename__)
+        self.__session.execute(table.delete())
+        self.save()
