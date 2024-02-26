@@ -44,7 +44,11 @@ class BaseModel:
 
     def to_dict(self):
         """Convert instance into dict format"""
-        data = dict(self.__dict__)
-        data.pop('_sa_instance_state', None)
-        data['__class__'] = self.__class__.__name__
-        return data
+        obj_dict = obj.to_dict()
+        class_name = obj_dict.get('__class__')
+        obj_id = obj_dict.get('id')
+        if class_name and obj_id:
+            key = class_name + '.' + obj_id
+            self.all().update({key: obj})
+        else:
+            print("Error: '__class__' or 'id' key is missing or None in object dictionary.")
