@@ -28,7 +28,7 @@ class User(BaseModel, Base):
 
     def __init__(self, *args, **kwargs):
         """
-            instantiates user object
+            ADDDDDDDDDDgit add
         """
         if kwargs:
             pwd = kwargs.pop('password', None)
