@@ -9,7 +9,10 @@ STO_TYP = getenv("HBNB_TYPE_STORAGE")
 
 
 class User(BaseModel, Base):
-    """This class defines a user by various attributes"""
+    """ This is a class that is very frusting to make 
+    but hey that part of the journey.
+    Any ways there is is forming relations ships with others
+    """
     if STO_TYP == 'db':
         __tablename__ = 'users'
         email = Column(String(128), nullable=False)
@@ -25,22 +28,3 @@ class User(BaseModel, Base):
         password = ''
         first_name = ''
         last_name = ''
-
-    def __init__(self, *args, **kwargs):
-        """
-            ADDDDDDDDDDgit add
-        """
-        if kwargs:
-            pwd = kwargs.pop('password', None)
-            if pwd:
-                User.__set_password(self, pwd)
-        super().__init__(*args, **kwargs)
-
-    def __set_password(self, pwd):
-        """
-            custom setter: encrypts password to MD5
-        """
-        secure = hashlib.md5()
-        secure.update(pwd.encode("utf-8"))
-        secure_password = secure.hexdigest()
-        setattr(self, "password", secure_password)

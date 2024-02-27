@@ -10,17 +10,14 @@ STO_TYP = getenv("HBNB_TYPE_STORAGE")
 
 
 class State(BaseModel, Base):
-    """ State class """
+    """ State class!!!!! """
     __tablename__ = "states"
     name = Column(String(128), nullable=False)
     cities = relationship("City", backref="state", cascade="delete")
 
     @property
     def cities(self):
-        """
-            getter method, returns list of City objs from storage
-            linked to the current State
-        """
+        """Getter for city.py or state idk."""
         city_list = []
         for city in models.storage.all("City").values():
             if city.state_id == self.id:

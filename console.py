@@ -97,7 +97,7 @@ class HBNBCommand(cmd.Cmd):
         exit()
 
     def do_create(self, line):
-        """Usage: create <Class name> <param 1> <param 2> <param 3>..."""
+        """ Command syntax: create <Class name> <param 1> <param 2> <param 3>... """
         if not line:
             print("** class name missing **")
             return
