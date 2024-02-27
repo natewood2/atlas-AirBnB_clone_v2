@@ -45,22 +45,20 @@ class DBStorage:
     def all(self, cls=None):
         """ Queries all objects of a given class from the database. """
         objects = {}
-        try:
-            if cls is None:
-                classes = [city.City, place.Place, review.Review, state.State, amenity.Amenity, user.User]
-            else:
-                classes = [cls] if not isinstance(cls, str) else [eval(cls)]
-            
+        if cls:
+            if isinstance(cls, str):
+                cls = eval(cls)
+            query = self.__session.query(cls).all()
+            for obj in query:
+                key = f'{obj.__class__.__name__}.{obj.id}'
+                objects[key] = obj
+        else:
+            classes = [state.State, city.City, user.User]
             for cls in classes:
                 query = self.__session.query(cls).all()
                 for obj in query:
-                    obj_copy = copy.deepcopy(obj)  # Deep copy the object
-                    if '_sa_instance_state' in obj_copy.__dict__:
-                        del obj_copy.__dict__['_sa_instance_state']  # Remove SQLAlchemy instance state
-                    key = f'{obj_copy.__class__.__name__}.{obj_copy.id}'
-                    objects[key] = obj_copy
-        except Exception:
-            pass
+                    key = f'{obj.__class__.__name__}.{obj.id}'
+                    objects[key] = obj
         return objects
 
     def new(self, obj):
