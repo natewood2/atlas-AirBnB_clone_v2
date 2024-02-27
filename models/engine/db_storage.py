@@ -50,13 +50,15 @@ class DBStorage:
                 classes = [city.City, place.Place, review.Review, state.State, amenity.Amenity, user.User]
             else:
                 classes = [cls] if not isinstance(cls, str) else [eval(cls)]
-        
+            
             for cls in classes:
                 query = self.__session.query(cls).all()
                 for obj in query:
-                    obj_dict = {column.name: getattr(obj, column.name) for column in obj.__table__.columns}
-                    key = f'{obj.__class__.__name__}.{obj.id}'
-                    objects[key] = obj_dict
+                    obj_copy = copy.deepcopy(obj)  # Deep copy the object
+                    if '_sa_instance_state' in obj_copy.__dict__:
+                        del obj_copy.__dict__['_sa_instance_state']  # Remove SQLAlchemy instance state
+                    key = f'{obj_copy.__class__.__name__}.{obj_copy.id}'
+                    objects[key] = obj_copy
         except Exception:
             pass
         return objects
