@@ -2,7 +2,6 @@
 """This module defines a class to manage file storage for hbnb clone
 with new SQL database.
 """
-from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from models.base_model import Base, BaseModel
 import os
@@ -27,6 +26,7 @@ class DBStorage:
 
     def __init__(self):
         """ Initializes the database engine. """
+        from sqlalchemy import create_engine
         self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
                                       format(os.environ['HBNB_MYSQL_USER'],
                                              os.environ['HBNB_MYSQL_PWD'],
