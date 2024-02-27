@@ -107,15 +107,15 @@ class HBNBCommand(cmd.Cmd):
             return
         kwargs = {}
         for param in range(1, len(args)):
-            ky, vl = args[param].split("=")
-            if vl[0] == '"':
-                vl = vl.replace('_', ' ').strip('"')
+            key, value = args[param].split("=")
+            if value[0] == '"':
+                value = value.replace('_', ' ').strip('"')
             else:
                 try:
-                    vl = eval(vl)
+                    value = eval(value)
                 except (SyntaxError, NameError):
                     continue
-            kwargs[ky] = vl
+            kwargs[key] = value
         if len(kwargs) == 0:
             obj = eval(args[0])()
         else:
