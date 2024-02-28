@@ -68,3 +68,7 @@ class DBStorage:
         if obj:
             self.__session.delete(obj)
 
+    @property
+    def file_storage(self):
+        """ Returns the instance of FileStorage. """
+        return self.__file_storage
