@@ -1,3 +1,5 @@
+from sqlalchemy import Table
+import os
 from models.amenity import Amenity
 from models.base_model import BaseModel, Base
 from sqlalchemy import Column, String, Integer, Float, ForeignKey
