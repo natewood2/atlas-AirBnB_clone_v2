@@ -18,3 +18,37 @@ class Place(BaseModel, Base):
     price_by_night = Column(Integer, default=0, nullable=False)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
+
+    @property
+    def reviews(self):
+        from models import storage
+        rev = []
+        for x in storage.all(Review).values():
+            if x.place_id == self.id:
+                rev.append(x)
+        return rev
+
+    @property
+    def amenities(self):
+        from models import storage
+        from models.amenity import Amenity
+        name = []
+        moby = storage.all(Amenity)
+
+        for amenity_inst in moby.values():
+            if amenity_inst.id == self.amenity_id:
+                name.append(amenity_inst)
+        return name
+
+    @amenities.setter
+    def amenities(self, amenity_list):
+        from models.amenity import Amenity
+        for x in amenity_list:
+            if type(x) == Amenity:
+                self.amenity_ids.append(x)
+
+    @reviews.setter
+    def reviews(self, review_obj):
+        if review_obj and review_obj not in self.review_ids:
+            self.review_ids.append(review_obj.id)
+
