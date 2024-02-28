@@ -8,11 +8,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from os import getenv
 
 STO_TYP = getenv("HBNB_TYPE_STORAGE")
-if STO_TYP == 'db':
-    Base = declarative_base()
-else:
-    class Base:
-        pass
+Base = declarative_base()
 
 
 class BaseModel:
