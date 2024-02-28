@@ -5,6 +5,7 @@ with new SQL database.
 from models.base_model import Base, BaseModel
 import os
 from models import city, place, review, state, amenity, user
+from models.engine.file_storage import FileStorage
 
 
 class DBStorage:
@@ -14,6 +15,7 @@ class DBStorage:
     """
     __engine = None
     __session = None
+    __file_storage = FileStorage()
 
     def __init__(self):
         """ Initializes the database engine. """
