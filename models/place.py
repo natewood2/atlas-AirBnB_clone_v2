@@ -19,7 +19,6 @@ if STO_TYP == 'db':
                                  ForeignKey('amenities.id'),
                                  primary_key=True,
                                  nullable=False))
-else
 
 class Place(BaseModel, Base):
     """ Place inherits from BaseModel and Base and a nice place to stay. """
