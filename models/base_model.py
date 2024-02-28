@@ -55,7 +55,10 @@ class BaseModel:
         models.storage.save()
 
     def to_dict(self):
-        """returns BaseModel dictionary"""
+        """
+        returns BaseModel dictionary
+        this project is bad
+        """
         cls_nam = self.__class__.__name__
         data = {
             k: v if type(v) == str else str(v)
@@ -70,3 +73,4 @@ class BaseModel:
     def delete(self):
         """deletes basemodel in storage"""
         models.storage.delete(self)
+        
