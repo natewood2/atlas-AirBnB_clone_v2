@@ -21,8 +21,9 @@ def c_and_text(text):
     return "C " + text.replace("_", " ")
 
 
+@app.route('/python/', strict_slashes=False)
 @app.route('/python/<text>', strict_slashes=False)
-def python_and_text_and_otherStuff(text):
+def python_and_text_and_otherStuff(text='is cool'):
     return "Python " + text.replace("_", " ")
 
 
