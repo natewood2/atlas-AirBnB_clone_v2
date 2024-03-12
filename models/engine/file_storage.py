@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """This module defines a class to manage file storage for hbnb clone"""
+import inspect
 import json
 from models import city, place, review, state, amenity, user, base_model
 
@@ -9,12 +10,12 @@ class FileStorage:
     __file_path = 'file.json'
     __objects = {}
     CDIC = {
-        'City': city.City,
-        'Place': place.Place,
-        'Review': review.Review,
-        'State': state.State,
-        'Amenity': amenity.Amenity,
-        'User': user.User
+            'City': city.City,
+            'Place': place.Place,
+            'Review': review.Review,
+            'State': state.State,
+            'Amenity': amenity.Amenity,
+            'User': user.User
         }
 
     def all(self, cls=None):
@@ -67,7 +68,7 @@ class FileStorage:
             with open(FileStorage.__file_path, 'r') as f:
                 temp = json.load(f)
                 for key, val in temp.items():
-                        self.all()[key] = classes[val['__class__']](**val)
+                    self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
 
