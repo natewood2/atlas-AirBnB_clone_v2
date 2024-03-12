@@ -72,3 +72,7 @@ class DBStorage:
     def file_storage(self):
         """ Returns the instance of FileStorage. """
         return self.__file_storage
+
+    def close(self):
+        """ Closes up the session. """
+        self.__session.close()
