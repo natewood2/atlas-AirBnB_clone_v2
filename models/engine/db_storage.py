@@ -74,5 +74,5 @@ class DBStorage:
         return self.__file_storage
 
     def close(self):
-        """ Closes up the session. """
+        """ Closes the session. """
         self.__session.close()
