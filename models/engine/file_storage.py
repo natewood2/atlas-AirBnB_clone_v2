@@ -15,19 +15,19 @@ class FileStorage:
         'State': state.State,
         'Amenity': amenity.Amenity,
         'User': user.User
-    }
+        }
 
     def all(self, cls=None):
         """query on the current database session"""
-        if cls is not None:
-            if cls in self.CDIC.keys():
-                cls = self.CDIC.get(cls)
-            spec_rich = {}
-            for ky, vl in self.__objects.items():
-                if cls == type(vl):
-                    spec_rich[ky] = vl
-            return spec_rich
-        return self.__objects
+        new_dict = {}
+        classes = self.CDIC
+        for class_name, class_obj in classes.items():
+            if cls is None or cls is class_obj or cls is class_name:
+                objs = self.__session.query(class_obj).all()
+                for obj in objs:
+                    key = obj.__class__.__name__ + "." + obj.id
+                    new_dict[key] = obj
+        return new_dict
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
